@@ -418,6 +418,7 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
         cust_spec.nicSettingMap = config[:customization_ips].split(',').map { |i| generate_adapter_map(i) }
       end
     end
+    puts cust_spec.inspect
 
     unless get_config(:disable_customization)
       use_ident = !config[:customization_hostname].nil? || !get_config(:customization_domain).nil? || cust_spec.identity.nil?
@@ -495,16 +496,18 @@ class Chef::Knife::VsphereVmClone < Chef::Knife::BaseVsphereCommand
   end
 
   # Generates a CustomizationAdapterMapping (currently only single IPv4 address) object
-  # @param ip [String] Any static IP address to use, otherwise DHCP
+  # @param ip [String] Any static IP address to use, or "dhcp" for DHCP
   # @param gw [String] If static, the gateway for the interface, otherwise network address + 1 will be used
   # @return [RbVmomi::VIM::CustomizationIPSettings]
   def generate_adapter_map (ip=nil, gw=nil, dns1=nil, dns2=nil, domain=nil)
 
     settings = RbVmomi::VIM.CustomizationIPSettings
 
-    if ip.nil?
-      settings.ip = RbVmomi::VIM::CustomizationDhcpIpGenerator
+    if ip.nil? || ip.downcase == "dhcp"
+      puts "Using DHCP for this interface!"
+      settings.ip = RbVmomi::VIM::CustomizationDhcpIpGenerator.new
     else
+      puts "Using IP #{ip} for this interface"
       cidr_ip = NetAddr::CIDR.create(ip)
       settings.ip = RbVmomi::VIM::CustomizationFixedIp(:ipAddress => cidr_ip.ip)
       settings.subnetMask = cidr_ip.netmask_ext
