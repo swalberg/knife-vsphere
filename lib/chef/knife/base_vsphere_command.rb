@@ -1,4 +1,4 @@
-#
+require 'byebug'#
 # Author:: Ezra Pagel (<ezra@cpan.org>)
 # Contributor:: Jesse Campbell (<hikeit@gmail.com>)
 # License:: Apache License, Version 2.0
@@ -168,11 +168,11 @@ class Chef
       def traverse_folders_for_dc(folder, dcname)
         children = folder.children.find_all
         children.each do |child|
-          if child.class == RbVmomi::VIM::Datacenter && child.name == dcname
-            return child
-          elsif child.class == RbVmomi::VIM::Folder
+          if child.respond_to? :children
             dc = traverse_folders_for_dc(child, dcname)
             return dc if dc
+          elsif child.respond_to?(:name) && child.name == dcname
+            return child
           end
         end
         false

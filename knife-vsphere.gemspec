@@ -21,4 +21,6 @@ Gem::Specification.new do |s|
   s.add_dependency('chef', ['>= 0.10.0'])
   s.add_dependency('rbvmomi', ['~> 1.8'])
   s.add_dependency('knife-windows', ['>= 0.6.0'])
+
+  s.add_development_dependency('cucumber')
 end
