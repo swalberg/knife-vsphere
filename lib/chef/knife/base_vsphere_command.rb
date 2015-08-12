@@ -301,6 +301,8 @@ class Chef
           folder.resourcePool.grep(type)
         elsif folder.instance_of?(RbVmomi::VIM::Folder)
           folder.childEntity.grep(type)
+        elsif folder.instance_of?(RbVmomi::VIM::VirtualApp)
+          folder.resourcePool.grep(type)
         else
           puts "Unknown type #{folder.class}, not enumerating"
           nil

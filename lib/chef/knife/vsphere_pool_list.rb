@@ -12,8 +12,6 @@ class Chef::Knife::VspherePoolList < Chef::Knife::BaseVsphereCommand
   common_options
 
   def traverse_folders(folder)
-    return if folder.is_a? RbVmomi::VIM::VirtualApp
-
     if folder.is_a? RbVmomi::VIM::ResourcePool
       pools = folder.path[3..-1].reject { |p| p.last == 'Resources' }
       puts "#{ui.color('Pool', :cyan)}: " + pools.map(&:last).join('/')
